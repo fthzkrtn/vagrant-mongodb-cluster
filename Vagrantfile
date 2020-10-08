@@ -5,20 +5,20 @@
 VAGRANTFILE_API_VERSION = "2"
 
 $mongoInitScript = <<-"SCRIPT"
-  YUM_REPO_CONFIG_PATH="/etc/yum.repos.d/mongodb-org-3.4.repo"
+  YUM_REPO_CONFIG_PATH="/etc/yum.repos.d/mongodb-org-4.4.repo"
 
   tee $YUM_REPO_CONFIG_PATH <<-"EOF"
-[mongodb-org-3.4]
+[mongodb-org-4.4]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.2/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.4/x86_64/
 gpgcheck=0
 enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc
+gpgkey=https://www.mongodb.org/static/pgp/server-4.4.asc
 EOF
 
   yum -y install openssl openssl-devel
   yum -y install nano mongodb-org --nogpgcheck
-  yum -y install perl	
+  yum -y install perl
 
   MONGOD_CONF_FILE="/etc/mongod.conf"
 
@@ -32,7 +32,7 @@ EOF
   systemctl start firewalld
   firewall-cmd --zone=public --add-port=27017/tcp --permanent
   firewall-cmd --reload
-  perl -pi -e 's/bindIp: 127.0.0.1/#bind_ip=127.0.0.1/g' /etc/mongod.conf
+  perl -pi -e 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/g' /etc/mongod.conf
   service mongod restart
 SCRIPT
 
@@ -42,10 +42,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "centos/7"
+  config.vm.box = "centos/8"
 
   config.vm.provider "virtualbox" do |v|
-    v.customize ["modifyvm", :id, "--cpus", "2"]
+    v.customize ["modifyvm", :id, "--cpus", "2", "--memory", 2048]
   end
 
   config.vm.define :mongo1 do |mongo1|
