@@ -45,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "centos/8"
 
   config.vm.provider "virtualbox" do |v|
-    v.customize ["modifyvm", :id, "--cpus", "2", "--memory", 2048]
+    v.customize ["modifyvm", :id, "--cpus", "4", "--memory", 8192]
   end
 
   config.vm.define :mongo1 do |mongo1|
@@ -64,6 +64,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     mongo3.vm.network :private_network, ip: "192.168.22.30"
     mongo3.vm.network "forwarded_port", guest: 27017, host: 27019
     mongo3.vm.provision "shell", inline: $mongoInitScript
+  end
+  
+  config.vm.define :mongo4 do |mongo4|
+    mongo4.vm.network :private_network, ip: "192.168.22.40"
+    mongo4.vm.network "forwarded_port", guest: 27017, host: 27020
+    mongo4.vm.provision "shell", inline: $mongoInitScript
   end
 
 end
